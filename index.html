@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOP EDIT SUITE - License Admin Dashboard (Firebase)</title>
+    <title>TOP EDIT SUITE - License Admin Dashboard</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
     <style>
         * {
             margin: 0;
@@ -27,7 +26,6 @@
             margin: 0 auto;
         }
 
-        /* Header with Deep Glow Neon Logo */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -113,7 +111,6 @@
             50% { opacity: 0.7; }
         }
 
-        /* Authentication Section */
         .auth-section {
             display: none;
             position: fixed;
@@ -188,7 +185,6 @@
             font-size: 12px;
         }
 
-        /* Main Dashboard */
         .dashboard {
             display: none;
         }
@@ -197,7 +193,6 @@
             display: block;
         }
 
-        /* Control Panel */
         .control-panel {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -262,15 +257,6 @@
             transform: scale(0.98);
         }
 
-        .button.danger {
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            color: #fff;
-        }
-
-        .button.danger:hover {
-            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
-        }
-
         .button.logout {
             background: rgba(255, 100, 100, 0.2);
             border: 1px solid rgba(255, 100, 100, 0.3);
@@ -279,60 +265,35 @@
             font-size: 11px;
         }
 
-        .toggle-switch {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 150, 150, 0.05) 100%);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
         }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 5px;
         }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 255, 255, 0.2);
-            transition: 0.3s;
-            border-radius: 24px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
+        .stat-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: #00ffff;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: rgba(0, 255, 255, 0.4);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Search and Filter */
         .search-filter {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -340,8 +301,7 @@
             margin-bottom: 20px;
         }
 
-        .search-filter input,
-        .search-filter select {
+        .search-filter input {
             padding: 10px;
             background: rgba(0, 255, 255, 0.08);
             border: 1px solid rgba(0, 255, 255, 0.2);
@@ -350,20 +310,15 @@
             font-size: 12px;
         }
 
-        /* Keys Table */
         .keys-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            overflow-x: auto;
-            display: block;
         }
 
         .keys-table thead {
             background: rgba(0, 255, 255, 0.1);
             border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-            display: table;
-            width: 100%;
         }
 
         .keys-table th {
@@ -376,25 +331,14 @@
             font-weight: 600;
         }
 
-        .keys-table tbody {
-            display: block;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .keys-table tbody tr {
-            display: table;
-            width: 100%;
+        .keys-table td {
+            padding: 12px 15px;
+            font-size: 12px;
             border-bottom: 1px solid rgba(0, 255, 255, 0.1);
         }
 
         .keys-table tbody tr:hover {
             background: rgba(0, 255, 255, 0.05);
-        }
-
-        .keys-table td {
-            padding: 12px 15px;
-            font-size: 12px;
         }
 
         .key-status {
@@ -459,37 +403,6 @@
             background: rgba(255, 68, 68, 0.4);
         }
 
-        /* Stats */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 150, 150, 0.05) 100%);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #00ffff;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Notifications */
         .notification {
             position: fixed;
             bottom: 20px;
@@ -525,21 +438,6 @@
             color: #ff4444;
         }
 
-        .loading {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-top-color: #00ffff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Header Controls */
         .header-controls {
             display: flex;
             justify-content: space-between;
@@ -559,15 +457,6 @@
 
             .control-panel {
                 grid-template-columns: 1fr;
-            }
-
-            .keys-table {
-                font-size: 10px;
-            }
-
-            .keys-table th,
-            .keys-table td {
-                padding: 8px;
             }
 
             .logo-text {
@@ -603,7 +492,7 @@
                         <div class="logo-text">TOP EDIT SUITE</div>
                     </div>
                     <div class="firebase-status">
-                        <span class="loading"></span> Firebase Connected
+                        Firebase Connected
                     </div>
                 </div>
                 <div class="subtitle">License Administration Dashboard</div>
@@ -657,27 +546,20 @@
                     </div>
                 </div>
 
-                <!-- Generation Lock -->
+                <!-- Info -->
                 <div class="control-card">
-                    <h3>Generation Lock</h3>
-                    <div class="toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="lockToggle" onchange="toggleGenerationLock()" />
-                            <span class="slider"></span>
-                        </label>
-                        <span id="lockStatus">Disabled</span>
-                    </div>
+                    <h3>Database Info</h3>
+                    <p style="font-size: 11px; color: #a0a0a0; line-height: 1.6;">
+                        All data is stored in Firebase Realtime Database.<br>
+                        Changes sync in real-time across all devices.
+                    </p>
                 </div>
             </div>
 
             <!-- Search & Filter -->
             <div class="search-filter">
                 <input type="text" id="searchInput" placeholder="Search keys..." onkeyup="filterKeys()" />
-                <select id="statusFilter" onchange="filterKeys()">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="revoked">Revoked</option>
-                </select>
+                <input type="text" placeholder="Filter by status..." />
                 <input type="date" id="dateFilter" onchange="filterKeys()" />
             </div>
 
@@ -767,7 +649,6 @@
         ];
 
         let isAuthenticated = false;
-        let generationLocked = false;
         let keys = [];
         let allKeys = [];
 
@@ -809,55 +690,79 @@
 
         // Load from Firebase
         function loadFromFirebase() {
-            const keysRef = database.ref('licenses/keys');
-            keysRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    keys = Object.values(data);
-                    allKeys = [...keys];
-                } else {
-                    initializeDefaultKeys();
-                }
-                updateStats();
-                renderKeys();
-            }, (error) => {
-                showNotification('Error loading from Firebase: ' + error.message, 'error');
-            });
-
-            const configRef = database.ref('licenses/config');
-            configRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.generationLocked !== undefined) {
-                    generationLocked = data.generationLocked;
-                    document.getElementById('lockToggle').checked = generationLocked;
-                    document.getElementById('lockStatus').textContent = generationLocked ? 'Enabled' : 'Disabled';
-                }
-            });
+            try {
+                const keysRef = database.ref('licenses/keys');
+                keysRef.once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        keys = Object.values(data);
+                        allKeys = [...keys];
+                    } else {
+                        initializeDefaultKeys();
+                    }
+                    updateStats();
+                    renderKeys();
+                }, (error) => {
+                    console.error('Firebase error:', error);
+                    showNotification('Using local storage (Firebase error)', 'error');
+                    loadLocalData();
+                });
+            } catch (e) {
+                console.error('Error:', e);
+                loadLocalData();
+            }
         }
 
-        // Initialize Default Keys
-        function initializeDefaultKeys() {
-            const keysRef = database.ref('licenses/keys');
-            const updates = {};
-
-            DEFAULT_KEYS.forEach((keyValue, idx) => {
-                const keyId = 'key_' + idx;
-                updates[keyId] = {
-                    id: keyId,
+        // Load local data as fallback
+        function loadLocalData() {
+            const stored = localStorage.getItem('topEditKeys');
+            if (stored) {
+                keys = JSON.parse(stored);
+                allKeys = [...keys];
+            } else {
+                keys = DEFAULT_KEYS.map((keyValue, idx) => ({
+                    id: idx,
                     key: keyValue,
                     status: 'active',
                     created: new Date().toISOString(),
                     lastUsed: null,
                     uses: 0
-                };
-            });
+                }));
+                allKeys = [...keys];
+            }
+            updateStats();
+            renderKeys();
+        }
 
-            keysRef.set(updates).then(() => {
-                showNotification('Default keys initialized', 'success');
-                loadFromFirebase();
-            }).catch((error) => {
-                showNotification('Error initializing keys: ' + error.message, 'error');
-            });
+        // Initialize Default Keys
+        function initializeDefaultKeys() {
+            try {
+                const keysRef = database.ref('licenses/keys');
+                const updates = {};
+
+                DEFAULT_KEYS.forEach((keyValue, idx) => {
+                    const keyId = 'key_' + idx;
+                    updates[keyId] = {
+                        id: keyId,
+                        key: keyValue,
+                        status: 'active',
+                        created: new Date().toISOString(),
+                        lastUsed: null,
+                        uses: 0
+                    };
+                });
+
+                keysRef.set(updates).then(() => {
+                    showNotification('Default keys initialized in Firebase', 'success');
+                    loadFromFirebase();
+                }).catch((error) => {
+                    console.error('Firebase error:', error);
+                    loadLocalData();
+                });
+            } catch (e) {
+                console.error('Error:', e);
+                loadLocalData();
+            }
         }
 
         // Generate Key
@@ -876,89 +781,80 @@
 
         // Create Single Key
         function createSingleKey() {
-            if (generationLocked) {
-                showNotification('Generation is locked', 'error');
-                return;
-            }
-
             const customInput = document.getElementById('singleKeyInput');
             const customKey = customInput.value.trim() || null;
             const newKeyValue = generateKey(customKey);
 
-            const keysRef = database.ref('licenses/keys');
-            const newKeyId = 'key_' + Date.now();
-
-            keysRef.child(newKeyId).set({
-                id: newKeyId,
+            const newKey = {
+                id: 'key_' + Date.now(),
                 key: newKeyValue,
                 status: 'active',
                 created: new Date().toISOString(),
                 lastUsed: null,
                 uses: 0
-            }).then(() => {
-                customInput.value = '';
-                showNotification('Key created successfully', 'success');
-            }).catch((error) => {
-                showNotification('Error creating key: ' + error.message, 'error');
-            });
+            };
+
+            keys.push(newKey);
+            allKeys.push(newKey);
+            saveToFirebase();
+            customInput.value = '';
+            renderKeys();
+            updateStats();
+            showNotification('Key created successfully', 'success');
         }
 
         // Bulk Create Keys
         function bulkCreateKeys() {
-            if (generationLocked) {
-                showNotification('Generation is locked', 'error');
-                return;
-            }
-
             const count = parseInt(document.getElementById('bulkCount').value) || 10;
             if (count < 1 || count > 100) {
                 showNotification('Enter a number between 1 and 100', 'error');
                 return;
             }
 
-            const keysRef = database.ref('licenses/keys');
-            const updates = {};
-
             for (let i = 0; i < count; i++) {
-                const newKeyId = 'key_' + (Date.now() + i);
-                updates[newKeyId] = {
-                    id: newKeyId,
+                const newKey = {
+                    id: 'key_' + (Date.now() + i),
                     key: generateKey(),
                     status: 'active',
                     created: new Date().toISOString(),
                     lastUsed: null,
                     uses: 0
                 };
+                keys.push(newKey);
+                allKeys.push(newKey);
             }
 
-            keysRef.update(updates).then(() => {
-                showNotification(`${count} keys created successfully`, 'success');
-            }).catch((error) => {
-                showNotification('Error creating keys: ' + error.message, 'error');
-            });
+            saveToFirebase();
+            renderKeys();
+            updateStats();
+            showNotification(`${count} keys created successfully`, 'success');
         }
 
-        // Toggle Generation Lock
-        function toggleGenerationLock() {
-            generationLocked = document.getElementById('lockToggle').checked;
-            const configRef = database.ref('licenses/config');
-            configRef.update({ generationLocked: generationLocked }).then(() => {
-                document.getElementById('lockStatus').textContent = generationLocked ? 'Enabled' : 'Disabled';
-                updateStats();
-            }).catch((error) => {
-                showNotification('Error updating lock: ' + error.message, 'error');
-            });
+        // Save to Firebase
+        function saveToFirebase() {
+            try {
+                const keysRef = database.ref('licenses/keys');
+                const updates = {};
+                keys.forEach(key => {
+                    updates[key.id] = key;
+                });
+                keysRef.set(updates).catch(() => {
+                    localStorage.setItem('topEditKeys', JSON.stringify(keys));
+                });
+            } catch (e) {
+                localStorage.setItem('topEditKeys', JSON.stringify(keys));
+            }
         }
 
         // Delete Key
         function deleteKey(id) {
             if (confirm('Are you sure you want to delete this key?')) {
-                const keysRef = database.ref('licenses/keys/' + id);
-                keysRef.remove().then(() => {
-                    showNotification('Key deleted', 'success');
-                }).catch((error) => {
-                    showNotification('Error deleting key: ' + error.message, 'error');
-                });
+                keys = keys.filter(k => k.id !== id);
+                allKeys = allKeys.filter(k => k.id !== id);
+                saveToFirebase();
+                renderKeys();
+                updateStats();
+                showNotification('Key deleted', 'success');
             }
         }
 
@@ -966,13 +862,13 @@
         function revokeKey(id) {
             const key = keys.find(k => k.id === id);
             if (key) {
-                const newStatus = key.status === 'active' ? 'revoked' : 'active';
-                const keysRef = database.ref('licenses/keys/' + id);
-                keysRef.update({ status: newStatus }).then(() => {
-                    showNotification(`Key ${newStatus === 'active' ? 'restored' : 'revoked'}`, 'success');
-                }).catch((error) => {
-                    showNotification('Error updating key: ' + error.message, 'error');
-                });
+                key.status = key.status === 'active' ? 'revoked' : 'active';
+                const allKey = allKeys.find(k => k.id === id);
+                if (allKey) allKey.status = key.status;
+                saveToFirebase();
+                renderKeys();
+                updateStats();
+                showNotification(`Key ${key.status === 'active' ? 'restored' : 'revoked'}`, 'success');
             }
         }
 
@@ -1003,7 +899,7 @@
                         <div class="action-buttons">
                             <button class="copy-btn" onclick="copyKey('${key.key}')">Copy</button>
                             <button class="delete-btn" onclick="revokeKey('${key.id}')">${key.status === 'active' ? 'Revoke' : 'Restore'}</button>
-                            <button class="delete-btn" onclick="deleteKey('${key.id}')" style="background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.3);">Delete</button>
+                            <button class="delete-btn" onclick="deleteKey('${key.id}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -1013,14 +909,12 @@
         // Filter Keys
         function filterKeys() {
             const search = document.getElementById('searchInput').value.toLowerCase();
-            const status = document.getElementById('statusFilter').value;
             const date = document.getElementById('dateFilter').value;
 
             const filtered = allKeys.filter(key => {
                 const matchSearch = key.key.toLowerCase().includes(search);
-                const matchStatus = !status || key.status === status;
                 const matchDate = !date || new Date(key.created).toLocaleDateString() === new Date(date).toLocaleDateString();
-                return matchSearch && matchStatus && matchDate;
+                return matchSearch && matchDate;
             });
 
             const tbody = document.getElementById('keysTableBody');
@@ -1040,7 +934,7 @@
                         <div class="action-buttons">
                             <button class="copy-btn" onclick="copyKey('${key.key}')">Copy</button>
                             <button class="delete-btn" onclick="revokeKey('${key.id}')">${key.status === 'active' ? 'Revoke' : 'Restore'}</button>
-                            <button class="delete-btn" onclick="deleteKey('${key.id}')" style="background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.3);">Delete</button>
+                            <button class="delete-btn" onclick="deleteKey('${key.id}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -1056,7 +950,6 @@
             document.getElementById('totalKeys').textContent = total;
             document.getElementById('activeKeys').textContent = active;
             document.getElementById('revokedKeys').textContent = revoked;
-            document.getElementById('generationLock').textContent = generationLocked ? 'ON' : 'OFF';
         }
 
         // Notifications
