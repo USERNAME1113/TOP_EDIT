@@ -483,8 +483,8 @@
                 <div class="control-card">
                     <h3>Database Info</h3>
                     <p style="font-size: 11px; color: #a0a0a0; line-height: 1.6;">
-                        All data is stored locally in your browser.<br>
-                        You can export/import data as needed.
+                        All data is stored in chrome.storage.local.<br>
+                        Changes here affect the plugin immediately.
                     </p>
                 </div>
             </div>
@@ -602,31 +602,56 @@
         // Initialize
         function init() {
             loadData();
-            updateStats();
-            renderKeys();
         }
 
-        // Load data
+        // Load data from chrome.storage.local
         function loadData() {
-            const stored = localStorage.getItem('topEditKeys');
-            if (stored) {
-                keys = JSON.parse(stored);
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.get(['topEditKeys'], function(result) {
+                    if (result.topEditKeys) {
+                        keys = result.topEditKeys;
+                    } else {
+                        keys = DEFAULT_KEYS.map((keyValue, idx) => ({
+                            id: idx,
+                            key: keyValue,
+                            status: 'active',
+                            created: new Date().toISOString(),
+                            lastUsed: null,
+                            uses: 0
+                        }));
+                        saveData();
+                    }
+                    allKeys = [...keys];
+                    renderKeys();
+                    updateStats();
+                });
             } else {
-                keys = DEFAULT_KEYS.map((keyValue, idx) => ({
-                    id: idx,
-                    key: keyValue,
-                    status: 'active',
-                    created: new Date().toISOString(),
-                    lastUsed: null,
-                    uses: 0
-                }));
-                saveData();
+                // Fallback for testing outside of extension
+                const stored = localStorage.getItem('topEditKeys');
+                if (stored) {
+                    keys = JSON.parse(stored);
+                } else {
+                    keys = DEFAULT_KEYS.map((keyValue, idx) => ({
+                        id: idx,
+                        key: keyValue,
+                        status: 'active',
+                        created: new Date().toISOString(),
+                        lastUsed: null,
+                        uses: 0
+                    }));
+                    saveData();
+                }
+                allKeys = [...keys];
+                renderKeys();
+                updateStats();
             }
-            allKeys = [...keys];
         }
 
-        // Save data
+        // Save data to chrome.storage.local
         function saveData() {
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.set({ 'topEditKeys': keys });
+            }
             localStorage.setItem('topEditKeys', JSON.stringify(keys));
         }
 
